@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 @WebServlet(urlPatterns = "/calculate")
 public class ServletCalculate extends HttpServlet {
@@ -29,27 +32,29 @@ public class ServletCalculate extends HttpServlet {
 
         JsonObject json = gson.fromJson(String.valueOf(jb), JsonObject.class);
 
-        int a = json.get("a").getAsInt();
-        int b = json.get("a").getAsInt();
+        double a = json.get("a").getAsDouble();
+        double b = json.get("b").getAsDouble();
         char math = json.get("math").getAsCharacter();
 
         JsonObject jsonObjectResult = new JsonObject();
+
+        DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US); //Создаем новый формат, чтобы разделителем была '.', вместо ','. Также целые числа будут отображаться без разделителя и лишних нулей.
         switch (math) {
             case ('*'):
-                jsonObjectResult.addProperty("result", String.valueOf(a * b));
+                jsonObjectResult.addProperty("result", String.valueOf(df.format(a * b)));
                 break;
             case ('/'):
                 if (b != 0) {
-                    jsonObjectResult.addProperty("result", String.valueOf(a / b));
+                    jsonObjectResult.addProperty("result", String.valueOf(df.format(a / b)));
                 } else {
                     jsonObjectResult.addProperty("result", "NaN");
                 }
                 break;
             case ('-'):
-                jsonObjectResult.addProperty("result", String.valueOf(a - b));
+                jsonObjectResult.addProperty("result", String.valueOf(df.format(a - b)));
                 break;
             case ('+'):
-                jsonObjectResult.addProperty("result", String.valueOf(a + b));
+                jsonObjectResult.addProperty("result", String.valueOf(df.format(a + b)));
                 break;
             default:
                 break;
